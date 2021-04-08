@@ -33,6 +33,8 @@ possible_actions = {
 # eg. the first element of a state tuple is 1 -> state corresponds to direction_tuple[1] = "WEST" location
 direction_tuple = ["CENTER", "WEST", "EAST", "NORTH", "SOUTH"]
 
+codes_loc = ["C", "W", "E", "N", "S"]
+codes_state = ["D", "R"]
 
 
 # MOVEMENT FUNCTIONS
@@ -262,7 +264,7 @@ def calc_prob(state, action):
     return ret
 
 
-initial_state = [1, 0, 0, 1, 4]
+initial_state = [1,0 ,0, 1, 4]
 
 
 def simulate(state):
@@ -279,7 +281,14 @@ def simulate(state):
 
 
 while initial_state[4] != 0:
-    print(initial_state, ": ", policy[tuple(initial_state)])
+    trace_state = initial_state.copy()
+    trace_state[0] = codes_loc[trace_state[0]]
+    trace_state[3] = codes_state[trace_state[3]]
+    trace_state[4] = trace_state[4]*25
+
+
+
+    print(trace_state, ": ", policy[tuple(initial_state)])
     initial_state = simulate(initial_state.copy())
     # print(initial_state)
     # print()
