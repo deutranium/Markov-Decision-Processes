@@ -317,13 +317,16 @@ def print_trace(state, best_action, max_util):
     trace_action = best_action
     trace_utility = '{:.3f}'.format(np.round(max_util, 3))
     
+    to_print = ""
         
-        
-    print("(", end="")
+    to_print += "("
     trace_state = ",".join([str(i) for i in trace_state])
-    print(trace_state, end=") :")
-    print(trace_action, end="=[")
-    print(trace_utility, end="]\n")
+    to_print += trace_state + "):"
+    to_print += trace_action + "=["
+    to_print += trace_utility + "]"
+
+    print(to_print)
+
 
 
 
@@ -402,10 +405,10 @@ while(cur_error > DELTA):
 
 
 
-# data for simulation
-print(type(best_actions))
-best_actions = np.array(best_actions)
-best_actions = best_actions.tolist()
-with open('best_actions.json', 'w') as f:
-    json.dump(best_actions, f)
+# # data for simulation
+# print(type(best_actions))
+# best_actions = np.array(best_actions)
+# best_actions = best_actions.tolist()
+# with open('best_actions.json', 'w') as f:
+#     json.dump(best_actions, f)
 
