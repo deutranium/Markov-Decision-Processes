@@ -385,12 +385,11 @@ while(cur_error > DELTA):
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
 
+        print_trace(state.copy(), best_action, max_util)
+
 
         this_iter_actions[tuple(state)] = best_action
 
-
-        
-        # print_trace(state.copy(), best_action, max_util)
         
     history.append(this_utilities)
     
