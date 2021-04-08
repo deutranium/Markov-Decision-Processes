@@ -284,8 +284,8 @@ def calc_prob(state, action):
 
 
 # calculate rewards
-def reward(old, new):
-    reward = STEP_COST
+def reward(old, new, action):
+    reward = 0 if action == "STAY" else STEP_COST
     
     # monster dies
     if new[4] == 0:
@@ -359,7 +359,7 @@ while(cur_error > DELTA):
 
                 for i, prob in enumerate(probs):
                     this_state = states[i].copy()
-                    utility += prob*(reward(state, this_state) + GAMMA*(history[-1][tuple(this_state)]))
+                    utility += prob*(reward(state, this_state, action) + GAMMA*(history[-1][tuple(this_state)]))
 
 
             action_utils.append(utility)
@@ -370,7 +370,7 @@ while(cur_error > DELTA):
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
         
-        print_trace(state.copy(), best_action, max_util)
+        # print_trace(state.copy(), best_action, max_util)
         
     history.append(this_utilities)
     

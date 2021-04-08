@@ -96,6 +96,8 @@ def move_left(pos):
     (x, y) = old_coordinates
     x -= 1
     coord = (x, y)
+    if old_coordinates == coordinates["EAST"]:
+        coord = coordinates["WEST"]
     new_state[0] = direction_tuple.index(positions[coord])
     return new_state
     
@@ -370,7 +372,7 @@ while(cur_error > DELTA):
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
         
-        print_trace(state.copy(), best_action, max_util)
+        # print_trace(state.copy(), best_action, max_util)
         
     history.append(this_utilities)
     
