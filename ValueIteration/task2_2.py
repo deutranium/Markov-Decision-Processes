@@ -2,6 +2,7 @@
 
 # import required libraries
 import random
+import json
 import numpy as np
 
 
@@ -61,6 +62,8 @@ utilities = np.zeros((5,3,4,2,5))
 history = []    # keep track of previous utilities
 history.append(utilities)
 
+
+best_actions = []
 
 
 # MOVEMENT FUNCTIONS
@@ -320,6 +323,9 @@ def print_trace(state, best_action, max_util):
 ## iteration loop
 
 while(cur_error > DELTA):
+
+    this_iter_actions = np.full((5,3,4,2,5), "kshitijaa")
+
     print("iteration=%d" % count)
     this_utilities = np.zeros((5,3,4,2,5))
 
@@ -370,10 +376,24 @@ while(cur_error > DELTA):
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
         
-        print_trace(state.copy(), best_action, max_util)
+        # print_trace(state.copy(), best_action, max_util)
+        this_iter_actions[tuple(state)] = best_action
         
     history.append(this_utilities)
     
     cur_error = np.max(np.abs(history[-1] - history[-2]))
     
     count += 1
+
+
+best_actions = this_iter_actions
+
+
+
+# data for simulation
+# print(type(best_actions))
+best_actions = np.array(best_actions)
+best_actions = best_actions.tolist()
+with open('best_actions_task2.json', 'w') as f:
+    json.dump(best_actions, f)
+
