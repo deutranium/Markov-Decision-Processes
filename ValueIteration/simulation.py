@@ -1,19 +1,7 @@
-# VALUE ITERATION ALGORITHMS
-
-# import required libraries
-import random
+import json
 import numpy as np
 
 
-# given CONSTANTS
-
-team_number = 92
-arr = [1/2, 1, 2]
-y = arr[team_number%3]
-STEP_COST = -10/y
-
-GAMMA = 0.999
-DELTA = 0.001
 
 # directional CONSTANTS and UTILITIES
 
@@ -44,22 +32,6 @@ possible_actions = {
 
 # eg. the first element of a state tuple is 1 -> state corresponds to direction_tuple[1] = "WEST" location
 direction_tuple = ["CENTER", "WEST", "EAST", "NORTH", "SOUTH"]
-codes_loc = ["C", "W", "E", "N", "S"]
-codes_state = ["D", "R"]
-
-# other CONSTANTS
-
-cur_error = 999999999 # to be minimized and brought down to < GAMMA
-count = 0    # keep track of the number of iterations
-
-utilities = np.zeros((5,3,4,2,5))
-# each state in the format (location, materials, arrows, monster state (dormant or active), monster helth)
-# = 5 * 3 * 4 * 2 * 5 states
-# P.S. monster helth will always be one of 0, 25, 50, 75, 100 so only 5 possibilities
-# set initial utility of each state as 0
-
-history = []    # keep track of previous utilities
-history.append(utilities)
 
 
 
@@ -127,6 +99,13 @@ def move(action, state):
     
     return(switcher[action](state))
 
+
+
+
+
+
+with open('best_actions.json') as f:
+    policy = np.array(json.load(f))
 
 
 def calc_prob(state, action):
@@ -283,97 +262,26 @@ def calc_prob(state, action):
     return ret
 
 
-# calculate rewards
-def reward(old, new, action):
-    reward = 0 if action == "STAY" else STEP_COST
-    
-    # monster dies
-    if new[4] == 0:
-        reward += 50
-        
-    # monster attaccs indiana
-    elif direction_tuple[old[0]] in ["CENTER", "EAST"] and old[3] == 1 and new[3] == 0:
-        reward -= 40
-        
-    return reward
+initial_state = [1, 0, 0, 1, 4]
 
-# print trace
-def print_trace(state, best_action, max_util):
-    trace_state = state.copy()
-    trace_state[0] = codes_loc[trace_state[0]]
-    trace_state[3] = codes_state[trace_state[3]]
-    trace_state[4] = trace_state[4]*25
 
-    trace_action = best_action
-    trace_utility = '{:.3f}'.format(np.round(max_util, 3))
-    
-        
-        
-    print("(", end="")
-    trace_state = ",".join([str(i) for i in trace_state])
-    print(trace_state, end=") :")
-    print(trace_action, end="=[")
-    print(trace_utility, end="]\n")
+def simulate(state):
+    # print(policy[tuple(state)])
+    probs = calc_prob(state, policy[tuple(state)])
+
+    this_states = np.array(probs[1])
+    this_probs = np.array(probs[0])
+
+    new_state = this_states[np.random.choice(np.arange(0, len(this_states)), p = this_probs)]
+
+    return list(new_state)
 
 
 
-## iteration loop
+while initial_state[4] != 0:
+    print(initial_state, ": ", policy[tuple(initial_state)])
+    initial_state = simulate(initial_state.copy())
+    # print(initial_state)
+    # print()
 
-while(cur_error > DELTA):
-    print("iteration=%d" % count)
-    this_utilities = np.zeros((5,3,4,2,5))
-
-
-    # loop through all the states
-    for state, val in np.ndenumerate(utilities):
-        
-        state = list(state)
-
-        cur_actions = possible_actions[direction_tuple[state[0]]].copy()
-
-        # no arrows
-        if 'SHOOT' in cur_actions and state[2] == 0:
-            cur_actions.remove('SHOOT')
-
-        # no material
-        if 'CRAFT' in cur_actions and state[1] == 0:
-            cur_actions.remove('CRAFT')
-
-        # monster helth = 0
-        if state[4] == 0:
-            cur_actions = ['NONE']
-
-        
-            
-        # all the utilities per action
-        action_utils = []
-        
-        
-        # loop through all the possible actions
-        for action in cur_actions:
-            utility = history[-1][tuple(state)]        
-            
-            if action != 'NONE':
-                probs, states = calc_prob(state, action)
-                utility = 0
-
-                for i, prob in enumerate(probs):
-                    this_state = states[i].copy()
-                    utility += prob*(reward(state, this_state, action) + GAMMA*(history[-1][tuple(this_state)]))
-
-
-            action_utils.append(utility)
-            
-            
-        max_util = max(action_utils)
-        gg_idx = action_utils.index(max_util)
-        best_action = cur_actions[gg_idx]
-        this_utilities[tuple(state)] = max_util
-        
-        # print_trace(state.copy(), best_action, max_util)
-        
-    history.append(this_utilities)
-    
-    cur_error = np.max(np.abs(history[-1] - history[-2]))
-    
-    count += 1
+print(initial_state, ": ", policy[tuple(initial_state)])

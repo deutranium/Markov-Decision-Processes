@@ -78,7 +78,7 @@ def move_up(state):
     return new_state
     
 
-def move_down(pos):
+def move_down(state):
     new_state = state.copy()
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -89,7 +89,7 @@ def move_down(pos):
     return new_state
     
 
-def move_left(pos):
+def move_left(state):
     new_state = state.copy()
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -102,7 +102,7 @@ def move_left(pos):
     return new_state
     
 
-def move_right(pos):
+def move_right(state):
     new_state = state.copy()
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -113,7 +113,7 @@ def move_right(pos):
     return new_state
     
 
-def move_stay(pos):
+def move_stay(state):
     new_state = state.copy()
     return new_state
     

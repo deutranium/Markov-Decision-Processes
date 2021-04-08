@@ -3,6 +3,7 @@
 # import required libraries
 import random
 import numpy as np
+import json
 
 
 # given CONSTANTS
@@ -61,6 +62,15 @@ utilities = np.zeros((5,3,4,2,5))
 history = []    # keep track of previous utilities
 history.append(utilities)
 
+best_actions = []
+
+
+
+
+
+
+
+
 
 
 # MOVEMENT FUNCTIONS
@@ -78,7 +88,7 @@ def move_up(state):
     return new_state
     
 
-def move_down(pos):
+def move_down(state):
     new_state = state.copy()
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -89,7 +99,7 @@ def move_down(pos):
     return new_state
     
 
-def move_left(pos):
+def move_left(state):
     new_state = state.copy()
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -100,7 +110,7 @@ def move_left(pos):
     return new_state
     
 
-def move_right(pos):
+def move_right(state):
     new_state = state.copy()
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -111,7 +121,7 @@ def move_right(pos):
     return new_state
     
 
-def move_stay(pos):
+def move_stay(state):
     new_state = state.copy()
     return new_state
     
@@ -320,6 +330,11 @@ def print_trace(state, best_action, max_util):
 ## iteration loop
 
 while(cur_error > DELTA):
+
+
+    this_iter_actions = np.full((5,3,4,2,5), "kshitijaa")
+
+
     print("iteration=%d" % count)
     this_utilities = np.zeros((5,3,4,2,5))
 
@@ -369,11 +384,29 @@ while(cur_error > DELTA):
         gg_idx = action_utils.index(max_util)
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
+
+
+        this_iter_actions[tuple(state)] = best_action
+
+
         
-        print_trace(state.copy(), best_action, max_util)
+        # print_trace(state.copy(), best_action, max_util)
         
     history.append(this_utilities)
     
     cur_error = np.max(np.abs(history[-1] - history[-2]))
     
+    best_actions = this_iter_actions
+
     count += 1
+
+
+
+
+# data for simulation
+print(type(best_actions))
+best_actions = np.array(best_actions)
+best_actions = best_actions.tolist()
+with open('best_actions.json', 'w') as f:
+    json.dump(best_actions, f)
+
