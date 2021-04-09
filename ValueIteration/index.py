@@ -76,7 +76,7 @@ best_actions = []
 # MOVEMENT FUNCTIONS
 
 def move_up(state):
-    new_state = state.copy()
+    new_state = list(state.copy())
     
     # get the coordinates from the state
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
@@ -89,7 +89,7 @@ def move_up(state):
     
 
 def move_down(state):
-    new_state = state.copy()
+    new_state = list(state.copy())
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
     (x, y) = old_coordinates
@@ -100,7 +100,7 @@ def move_down(state):
     
 
 def move_left(state):
-    new_state = state.copy()
+    new_state = list(state.copy())
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
     (x, y) = old_coordinates
@@ -111,7 +111,7 @@ def move_left(state):
     
 
 def move_right(state):
-    new_state = state.copy()
+    new_state = list(state.copy())
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
     (x, y) = old_coordinates
@@ -122,7 +122,7 @@ def move_right(state):
     
 
 def move_stay(state):
-    new_state = state.copy()
+    new_state = list(state.copy())
     return new_state
     
 
@@ -262,32 +262,29 @@ def calc_prob(state, action):
         new_probs = []
         new_states = []
         
-        if location == "EAST" or "CENTER":
-            attacc_prob = [0.5, 0.5]
-            
-            for i, prob in enumerate(probabilities):
-                new_probs.append(prob*attacc_prob[0])
-                new_states.append(states[i].copy())
-            new_probs.append(attacc_prob[1])
-            
-            og_state = state.copy()
-            og_state[2] = 0 # arrows
-            og_state[4] = min(4, og_state[4] + 1) # helth
-            og_state[3] = 0 # dormant state
-            new_states.append(og_state)
-            
-        else:
-            awake_prob = [0.5, 0.5]
-            probabilities = ret[0]
-            states = ret[1]
+        # if not location == "EAST" or "CENTER":
+        attacc_prob = [0.5, 0.5]
+        
+        for i, prob in enumerate(probabilities):
+            new_probs.append(prob*attacc_prob[0])
+            new_states.append(states[i].copy())
+        # new_probs.append(attacc_prob[1])
+        
+        
+        
 
-            for i, prob in enumerate(probabilities):
-                new_probs.append(prob*awake_prob[0])
-                new_probs.append(prob*awake_prob[1])
-                awake_state = states[i].copy()
-                awake_state[3] = 0
-                new_states.append(awake_state)
-                new_states.append(states[i].copy())
+        for i, prob in enumerate(probabilities):
+            awake_state = states[i].copy()
+
+            if location == "EAST" or "CENTER":
+                og_state = state.copy()
+                og_state[2] = 0 # arrows
+                og_state[4] = min(4, og_state[4] + 1) # helth
+            
+            og_state[3] = 0 # dormant state
+                            
+            new_probs.append(prob*attacc_prob[0])
+            new_states.append(og_state.copy())
         ret = [new_probs, new_states]
             
     return ret
@@ -384,9 +381,16 @@ while(cur_error > DELTA):
             
             
         max_util = max(action_utils)
-        gg_idx = action_utils.index(max_util)
+
+        gg_idx = len(action_utils) - 1 - action_utils[::-1].index(max_util)
+
+
+
+        # gg_idx = action_utils.index(max_util)
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
+
+        # print(max_util)
 
         print_trace(state.copy(), best_action, max_util)
 
@@ -405,10 +409,9 @@ while(cur_error > DELTA):
 
 
 
-# # data for simulation
-# print(type(best_actions))
-# best_actions = np.array(best_actions)
-# best_actions = best_actions.tolist()
-# with open('best_actions.json', 'w') as f:
-#     json.dump(best_actions, f)
+# data for simulation
+best_actions = np.array(best_actions)
+best_actions = best_actions.tolist()
+with open('best_actions.json', 'w') as f:
+    json.dump(best_actions, f)
 
