@@ -2,8 +2,8 @@
 
 # import required libraries
 import random
-import json
 import numpy as np
+import json
 
 
 # given CONSTANTS
@@ -13,7 +13,7 @@ arr = [1/2, 1, 2]
 y = arr[team_number%3]
 STEP_COST = -10/y
 
-GAMMA = 0.25
+GAMMA = 0.999
 DELTA = 0.001
 
 # directional CONSTANTS and UTILITIES
@@ -65,6 +65,17 @@ history.append(utilities)
 best_actions = []
 
 
+
+f = open("./outputs/part_2_task_2.1_trace.txt", "w+")
+
+
+
+
+
+
+
+
+
 # MOVEMENT FUNCTIONS
 
 def move_up(state):
@@ -92,14 +103,15 @@ def move_down(state):
     
 
 def move_left(state):
-    new_state = state.copy()
+    new_state = list(state.copy())
     
     old_coordinates = coordinates[direction_tuple[new_state[0]]]
     (x, y) = old_coordinates
-    x -= 1
-    coord = (x, y)
-    if old_coordinates == coordinates["EAST"]:
+    if positions[old_coordinates] == "EAST":
         coord = coordinates["WEST"]
+    else:    
+        x -= 1
+        coord = (x, y)
     new_state[0] = direction_tuple.index(positions[coord])
     return new_state
     
@@ -311,22 +323,28 @@ def print_trace(state, best_action, max_util):
     trace_action = best_action
     trace_utility = '{:.3f}'.format(np.round(max_util, 3))
     
+    to_print = ""
         
-        
-    print("(", end="")
+    to_print += "("
     trace_state = ",".join([str(i) for i in trace_state])
-    print(trace_state, end="):")
-    print(trace_action, end="=[")
-    print(trace_utility, end="]\n")
+    to_print += trace_state + "):"
+    to_print += trace_action + "=["
+    to_print += trace_utility + "]\n"
+
+    f.write(to_print)
+
 
 
 
 ## iteration loop
 
 while(cur_error > DELTA):
+
+
     this_iter_actions = np.full((5,3,4,2,5), "kshitijaa")
 
-    print("iteration=%d" % count)
+
+    f.write("iteration=%d \n" % count)
     this_utilities = np.zeros((5,3,4,2,5))
 
 
@@ -375,24 +393,29 @@ while(cur_error > DELTA):
         gg_idx = action_utils.index(max_util)
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
-        
+
         print_trace(state.copy(), best_action, max_util)
+
+
         this_iter_actions[tuple(state)] = best_action
+
         
     history.append(this_utilities)
     
     cur_error = np.max(np.abs(history[-1] - history[-2]))
     
+    best_actions = this_iter_actions
+
     count += 1
 
 
-best_actions = this_iter_actions
 
 
-
-# data for simulation
+# # data for simulation
+# print(type(best_actions))
 # best_actions = np.array(best_actions)
 # best_actions = best_actions.tolist()
-# with open('best_actions_task3.json', 'w') as f:
+# with open('best_actions.json', 'w') as f:
 #     json.dump(best_actions, f)
 
+f.close()

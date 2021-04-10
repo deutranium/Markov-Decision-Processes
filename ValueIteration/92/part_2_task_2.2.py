@@ -66,6 +66,10 @@ history.append(utilities)
 best_actions = []
 
 
+f = open("./outputs/part_2_task_2.2_trace.txt", "w+")
+
+
+
 # MOVEMENT FUNCTIONS
 
 def move_up(state):
@@ -310,13 +314,15 @@ def print_trace(state, best_action, max_util):
     trace_action = best_action
     trace_utility = '{:.3f}'.format(np.round(max_util, 3))
     
+    to_print = ""
         
-        
-    print("(", end="")
+    to_print += "("
     trace_state = ",".join([str(i) for i in trace_state])
-    print(trace_state, end="):")
-    print(trace_action, end="=[")
-    print(trace_utility, end="]\n")
+    to_print += trace_state + "):"
+    to_print += trace_action + "=["
+    to_print += trace_utility + "]\n"
+
+    f.write(to_print)
 
 
 
@@ -326,7 +332,7 @@ while(cur_error > DELTA):
 
     this_iter_actions = np.full((5,3,4,2,5), "kshitijaa")
 
-    print("iteration=%d" % count)
+    f.write("iteration=%d \n" % count)
     this_utilities = np.zeros((5,3,4,2,5))
 
 

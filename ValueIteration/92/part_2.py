@@ -11,7 +11,7 @@ import json
 team_number = 92
 arr = [1/2, 1, 2]
 y = arr[team_number%3]
-STEP_COST = -20
+STEP_COST = -10/y
 
 GAMMA = 0.999
 DELTA = 0.001
@@ -67,7 +67,7 @@ best_actions = []
 
 
 
-
+f = open("./outputs/part_2_trace.txt", "w+")
 
 
 
@@ -323,9 +323,9 @@ def print_trace(state, best_action, max_util):
     trace_state = ",".join([str(i) for i in trace_state])
     to_print += trace_state + "):"
     to_print += trace_action + "=["
-    to_print += trace_utility + "]"
+    to_print += trace_utility + "]\n"
 
-    print(to_print)
+    f.write(to_print)
 
 
 
@@ -338,7 +338,7 @@ while(cur_error > DELTA):
     this_iter_actions = np.full((5,3,4,2,5), "kshitijaa")
 
 
-    print("iteration=%d" % count)
+    f.write("iteration=%d \n" % count)
     this_utilities = np.zeros((5,3,4,2,5))
 
 
@@ -388,7 +388,7 @@ while(cur_error > DELTA):
         best_action = cur_actions[gg_idx]
         this_utilities[tuple(state)] = max_util
 
-        # print_trace(state.copy(), best_action, max_util)
+        print_trace(state.copy(), best_action, max_util)
 
 
         this_iter_actions[tuple(state)] = best_action
@@ -398,7 +398,6 @@ while(cur_error > DELTA):
     
     cur_error = np.max(np.abs(history[-1] - history[-2]))
 
-    print(cur_error)
     
     best_actions = this_iter_actions
 
@@ -408,9 +407,11 @@ while(cur_error > DELTA):
 
 
 # data for simulation
-print(type(best_actions))
-best_actions = np.array(best_actions)
-best_actions = best_actions.tolist()
-with open('best_actions.json', 'w') as f:
-    json.dump(best_actions, f)
+# print(type(best_actions))
+# best_actions = np.array(best_actions)
+# best_actions = best_actions.tolist()
+# with open('best_actions.json', 'w') as f:
+#     json.dump(best_actions, f)
 
+
+f.close()
